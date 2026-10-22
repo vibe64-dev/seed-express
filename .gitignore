@@ -1,0 +1,11 @@
+/.genesis/
+node_modules/
+logs
+*.log
+/app.sqlite3
+/app.sqlite3-*
+/.dev-secret
+.env
+.env.*
+/.genesis/machine-city.json
+/.genesis/program-city.json

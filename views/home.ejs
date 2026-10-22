@@ -1,0 +1,22 @@
+<%- include('partials/head', { title: 'Notes' }) %>
+      <% if (saved) { %><p class="notice" role="status">Note saved.</p><% } %>
+      <form method="post" action="/" class="note-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label for="text">New note</label>
+        <textarea id="text" name="text" rows="3" maxlength="<%= maxLength %>" required<% if (error) { %> aria-describedby="text-error" aria-invalid="true"<% } %>><%= text %></textarea>
+        <% if (error) { %><p id="text-error" class="error"><%= error %></p><% } %>
+        <button type="submit">Save note</button>
+      </form>
+      <section aria-labelledby="recent">
+        <h2 id="recent">Recent notes</h2>
+        <% if (notes.length === 0) { %>
+          <p class="empty">No notes yet.</p>
+        <% } else { %>
+          <ul class="notes">
+            <% notes.forEach((note) => { %>
+              <li><p><%= note.text %></p><time datetime="<%= note.created_at %>"><%= note.created_at.slice(0, 16).replace('T', ' ') %> UTC</time></li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </section>
+<%- include('partials/foot') %>

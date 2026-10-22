@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+'use strict';
+
+const http = require('node:http');
+const { loadConfig } = require('../lib/config');
+const { openDatabase, assertMigrated } = require('../lib/database');
+const { createApp } = require('../app');
+
+const config = loadConfig();
+const db = openDatabase(config.databaseFile);
+assertMigrated(db);
+
+const server = http.createServer(createApp({ db, sessionSecret: config.sessionSecret }));
+
+server.on('error', (error) => {
+  console.error(error.code === 'EADDRINUSE' ? `${config.host}:${config.port} is already in use.` : error);
+  process.exit(1);
+});
+
+server.listen(config.port, config.host, () => {
+  console.log(`Listening on http://${config.host}:${config.port}`);
+});
+
+function shutdown() {
+  server.close(() => {
+    db.close();
+    process.exit(0);
+  });
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
